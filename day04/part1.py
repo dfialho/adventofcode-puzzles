@@ -8,12 +8,7 @@ def is_passphrase_valid(passphrase: str) -> bool:
 
 
 def check_passphrases(passphrases: Iterator) -> int:
-    count = 0
-    for passphrase in passphrases:
-        if is_passphrase_valid(passphrase):
-            count += 1
-
-    return count
+    return sum(1 for passphrase in passphrases if is_passphrase_valid(passphrase))
 
 
 def passphrases(path: str):
@@ -23,7 +18,6 @@ def passphrases(path: str):
 
 
 def main():
-    print(len(list(passphrases("input.txt"))))
     print("Solution part 1:", check_passphrases(passphrases("input.txt")))
 
 
