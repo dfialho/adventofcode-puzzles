@@ -1,6 +1,6 @@
 import pytest
 
-from spiral_part2 import r, side_index
+from spiral_part2 import level, side_index
 
 
 @pytest.mark.parametrize("n, solution", [
@@ -39,7 +39,7 @@ from spiral_part2 import r, side_index
     (51, 9),
 ])
 def test_compute_r(n: int, solution: int):
-    assert solution == r(n)
+    assert solution == level(n)
 
 
 @pytest.mark.parametrize("n, solution", [
