@@ -1,7 +1,7 @@
-from typing import Callable
+from typing import Callable, Generator, List
 
 
-def count_steps(offsets: list, offset_adjustment: Callable[[int], int]) -> int:
+def count_steps(offsets: List[int], offset_adjustment: Callable[[int], int]) -> int:
     current_position = 0
     step_count = 0
     offset_count = len(offsets)
@@ -15,13 +15,13 @@ def count_steps(offsets: list, offset_adjustment: Callable[[int], int]) -> int:
     return step_count
 
 
-def offsets(path: str):
+def offsets(path: str) -> Generator[int, None, None]:
     with open(path) as file:
         for line in file:
             yield int(line)
 
 
-def main():
+def main() -> None:
     print("Solution part 1:", count_steps(list(offsets("input.txt")), lambda offset: 1))
     print("Solution part 2:", count_steps(list(offsets("input.txt")),
                                           lambda offset: -1 if offset >= 3 else +1))
