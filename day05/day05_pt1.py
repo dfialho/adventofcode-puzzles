@@ -1,8 +1,9 @@
 def count_steps(offsets: list) -> int:
     current_position = 0
     step_count = 0
+    offset_count = len(offsets)
 
-    while 0 <= current_position < len(offsets):
+    while 0 <= current_position < offset_count:
         offset = offsets[current_position]
         offsets[current_position] += 1
         current_position += offset
