@@ -22,9 +22,9 @@ def offsets(path: str):
 
 
 def main():
-    offset_values = list(offsets("input.txt"))
-    print("Solution part 1:", count_steps(offset_values, lambda offset: 1))
-    print("Solution part 2:", count_steps(offset_values, lambda offset: -1 if offset >= 3 else +1))
+    print("Solution part 1:", count_steps(list(offsets("input.txt")), lambda offset: 1))
+    print("Solution part 2:", count_steps(list(offsets("input.txt")),
+                                          lambda offset: -1 if offset >= 3 else +1))
 
 
 if __name__ == '__main__':
