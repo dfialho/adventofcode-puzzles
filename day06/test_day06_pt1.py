@@ -1,8 +1,9 @@
+import operator
 from typing import List
 
 import pytest
 
-from day06_pt1 import max_and_index, count_cycles
+from day06_pt1 import count_cycles
 
 
 @pytest.mark.parametrize("values, expected_index, expected_value", [
@@ -14,7 +15,7 @@ from day06_pt1 import max_and_index, count_cycles
     ([0, 2, 7, 5, 8], 4, 8),
 ])
 def test_index_of_max(values: List[int], expected_index: int, expected_value: int):
-    assert (expected_index, expected_value) == max_and_index(values)
+    assert (expected_index, expected_value) == max(enumerate(values), key=operator.itemgetter(1))
 
 
 @pytest.mark.parametrize("values, expected_cycles", [

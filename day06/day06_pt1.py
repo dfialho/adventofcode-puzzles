@@ -9,19 +9,18 @@ def read_configuration(path: str) -> List[int]:
 
 def count_cycles(configuration: List[int]) -> int:
     bank_count = len(configuration)
-    current_configuration = tuple(configuration)
     past_configurations: Set[tuple] = set()
+    current_configuration = tuple(configuration)
     cycle_count = 0
 
     while current_configuration not in past_configurations:
         past_configurations.add(current_configuration)
 
-        bank, block_count = max_and_index(configuration)
+        # Find the bank with the highest number of blocks
+        bank, block_count = max(enumerate(configuration), key=operator.itemgetter(1))
 
-        # Clear the bank
+        # Clear the bank and redistribute its blocks among all banks
         configuration[bank] = 0
-
-        # Redistribute the blocks among all banks
         for i in range(block_count):
             configuration[(bank + i + 1) % bank_count] += 1
 
@@ -29,12 +28,6 @@ def count_cycles(configuration: List[int]) -> int:
         current_configuration = tuple(configuration)
 
     return cycle_count
-
-
-def max_and_index(values: List[int]) -> Tuple[int, int]:
-    """ Returns the max value and the corresponding index """
-    max_index, max_value = max(enumerate(values), key=operator.itemgetter(1))
-    return max_index, max_value
 
 
 def main() -> None:
