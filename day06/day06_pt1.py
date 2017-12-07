@@ -1,35 +1,30 @@
-from typing import Generator, Tuple, List, Iterator, NamedTuple, Set
+from typing import Generator, Tuple, List, Iterator, Set
 
 
-class Program(NamedTuple):
-    name: str
-    sub_programs: List[str]
-
-
-def find_bottom_program(programs: Iterator[Program]) -> str:
+def find_bottom_program(programs: Iterator[Tuple[str, List[str]]]) -> str:
     all_programs: Set[str] = set()
     all_sub_programs: Set[str] = set()
 
-    for program in programs:
-        all_programs.add(program.name)
-        all_sub_programs.update(program.sub_programs)
+    for program, sub_programs in programs:
+        all_programs.add(program)
+        all_sub_programs.update(sub_programs)
 
+    # If the input is correct the result of this difference should contain a single program,
+    # the bottom program
     bottom_program = all_programs - all_sub_programs
     return bottom_program.pop()
 
 
-def programs(path: str) -> Generator[Program, None, None]:
+def programs(path: str) -> Generator[Tuple[str, List[str]], None, None]:
     with open(path) as file:
         for line in file:
-            if "->" in line:
-                program_params, sub_programs = line.split("->")
-                name, weight = program_params.strip().split(" ")
-                sub_programs = [sub_program.strip() for sub_program in sub_programs.split(",")]
-            else:
-                name, weight = line.strip().split(" ")
-                sub_programs = []
+            program, *sub_programs = line.split("->")
+            name, _ = program.strip().split(" ")
 
-            yield Program(name, sub_programs)
+            if sub_programs:
+                sub_programs = [sub_program.strip() for sub_program in sub_programs[0].split(", ")]
+
+            yield name, sub_programs
 
 
 def main():
