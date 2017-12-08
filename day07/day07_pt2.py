@@ -8,10 +8,22 @@ class Program(NamedTuple):
 
 
 def tower_weight(program: Program) -> int:
-    weight = program.weight
+    """
+    Computes, recursively, the weight of the tower above the given *program*.
+    It also checks for unbalanced sub-towers. If it finds one, it computes the new weight for the
+    sub-program that needs to be adjusted and prints it out.
 
-    weight_to_program = {}
-    sub_weights = []
+    It may print multiple values/solutions. In that case, only the first values is the actual
+    solution.
+
+    :return: weight of the tower above *program*
+    """
+    # Maps a weight to a program
+    weight_to_program: Dict[int, Program] = {}
+    # Stores the weights of all sub-towers
+    sub_weights: List[int] = []
+
+    # Compute the weight of all sub-towers
     for sub_program in program.sub_programs:
         sub_tower_weight = tower_weight(sub_program)
         weight_to_program[sub_tower_weight] = sub_program
@@ -24,7 +36,7 @@ def tower_weight(program: Program) -> int:
             sub_program = weight_to_program[different_weight]
             print("SOLUTION:", common_weight - different_weight + sub_program.weight)
 
-    return weight + sum(sub_weights)
+    return program.weight + sum(sub_weights)
 
 
 def find_different(values: List[int]) -> Tuple[int, int]:
@@ -81,10 +93,10 @@ def programs(path: str) -> Iterator[Tuple[str, int, List[str]]]:
     with open(path) as file:
         for line in file:
             program_attributes, *sub_programs = line.split("->")
-            name, weight = program_attributes.strip().split(" ")
+            name, weight_str = program_attributes.strip().split(" ")
 
             # Remove parenthesis and convert to integer
-            weight = int(weight[1:-1])
+            weight = int(weight_str[1:-1])
 
             if sub_programs:
                 sub_programs = [sub_program.strip() for sub_program in sub_programs[0].split(", ")]
