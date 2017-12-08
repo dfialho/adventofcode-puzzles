@@ -4,13 +4,7 @@ from typing import Tuple, List, Iterator, NamedTuple, Dict
 class Program(NamedTuple):
     name: str
     weight: int
-    sub_programs: List['Program'] = []
-
-    def __eq__(self, other: 'Program') -> bool:
-        return self.name == other.name
-
-    def __hash__(self) -> int:
-        return hash(self.name)
+    sub_programs: List['Program']
 
 
 def tower_weight(program: Program) -> int:
