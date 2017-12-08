@@ -1,6 +1,4 @@
-from typing import Tuple, List, Iterator, Set, NamedTuple, Dict
-
-import sys
+from typing import Tuple, List, Iterator, NamedTuple, Dict, Iterable
 
 
 class Program(NamedTuple):
@@ -43,35 +41,24 @@ def tower_weight(program: Program) -> int:
 
 
 def read_tree(programs: Iterator[Tuple[str, int, List[str]]]) -> Program:
-    # Stores all programs found in the input
-    all_programs: List[Program] = []
     # Dictionary to map program names to actual programs
     program_by_name: Dict[str, Program] = {}
-    # Stores a list of sub-program names for each program
-    sub_programs_by_name: Dict[str, List[str]] = {}
+    # Stores a list of pairs. Each pair holds a program name and the name of one of its sub-programs
+    sub_programs_names: List[Tuple[str, str]] = []
 
-    for name, weight, sub_programs in programs:
-        program = Program(name, weight, [])
-        all_programs.append(program)
-        program_by_name[name] = program
-        sub_programs_by_name[name] = sub_programs
+    # Initialize 'program_by_name' and 'sub_programs_names' based on the input
+    for name, weight, sub_names in programs:
+        program_by_name[name] = Program(name, weight, [])
+        sub_programs_names.extend((name, sub_name) for sub_name in sub_names)
 
     # Add the actual sub-programs to each program according to 'sub_programs_by_name'
-    for program in all_programs:
-        for sub_program in sub_programs_by_name[program.name]:
-            program.sub_programs.append(program_by_name[sub_program])
-
-    return find_bottom_program(all_programs)
-
-
-def find_bottom_program(programs: Iterator[Program]) -> Program:
-    # Put all sub-programs in a set
-    sub_programs = set(sub_program for program in programs for sub_program in program.sub_programs)
+    for name, sub_name in sub_programs_names:
+        program_by_name[name].sub_programs.append(program_by_name[sub_name])
 
     # If the input is correct the result of this difference should contain a single program,
     # the bottom program
-    bottom_program = set(programs) - sub_programs
-    return bottom_program.pop()
+    bottom_program = set(program_by_name) - set(sub_name for _, sub_name in sub_programs_names)
+    return program_by_name[bottom_program.pop()]
 
 
 def programs(path: str) -> Iterator[Tuple[str, int, List[str]]]:
@@ -97,7 +84,7 @@ def programs(path: str) -> Iterator[Tuple[str, int, List[str]]]:
 
 
 def main():
-    tower_weight(read_tree(programs("input_example.txt")))
+    tower_weight(read_tree(programs("input.txt")))
 
 
 if __name__ == '__main__':
