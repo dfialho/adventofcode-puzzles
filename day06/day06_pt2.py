@@ -15,31 +15,31 @@ class Program(NamedTuple):
         return hash(self.name)
 
 
-def find_odd(values: list) -> (int, int):
-    if max(values) != min(values):
-        if values.count(max(values)) == 1:
-            return max(values), min(values)
-        else:
-            return min(values), max(values)
-
-    return values[0], values[0]
+def find_odd(values: List[int]) -> Tuple[int, int]:
+    if values.count(max(values)) == 1:
+        return max(values), min(values)
+    else:
+        return min(values), max(values)
 
 
 def tower_weight(program: Program) -> int:
     weight = program.weight
-    sub_weights = [(sub_program, tower_weight(sub_program)) for sub_program in program.sub_programs]
+
+    weight_to_program = {}
+    sub_weights = []
+    for sub_program in program.sub_programs:
+        sub_tower_weight = tower_weight(sub_program)
+        weight_to_program[sub_tower_weight] = sub_program
+        sub_weights.append(sub_tower_weight)
 
     if sub_weights:
-        odd_value, normal_value = find_odd([w for p, w in sub_weights])
+        different_weight, common_weight = find_odd(sub_weights)
 
-        if odd_value != normal_value:
-            for sub_program, sub_weight in sub_weights:
-                if odd_value == sub_weight:
-                    print("SOLUTION:", normal_value - odd_value + sub_program.weight)
-                    sys.exit(1)
+        if different_weight != common_weight:
+            sub_program = weight_to_program[different_weight]
+            print("SOLUTION:", common_weight - different_weight + sub_program.weight)
 
-    # print(f"{program.name}: {weight}")
-    return weight + sum(w for p, w in sub_weights)
+    return weight + sum(sub_weights)
 
 
 def read_tree(programs: Iterator[Tuple[str, int, List[str]]]) -> Program:
