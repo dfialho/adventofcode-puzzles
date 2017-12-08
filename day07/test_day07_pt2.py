@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from day06_pt2 import find_odd
+from day07_pt2 import find_odd
 
 
 @pytest.mark.parametrize("values, expected_odd, expected_normal", [
