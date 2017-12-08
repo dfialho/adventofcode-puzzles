@@ -1,4 +1,4 @@
-from typing import Tuple, List, Iterator, NamedTuple, Dict, Iterable
+from typing import Tuple, List, Iterator, NamedTuple, Dict
 
 
 class Program(NamedTuple):
@@ -40,7 +40,12 @@ def tower_weight(program: Program) -> int:
     return weight + sum(sub_weights)
 
 
-def read_tree(programs: Iterator[Tuple[str, int, List[str]]]) -> Program:
+def build_tower(programs: Iterator[Tuple[str, int, List[str]]]) -> Program:
+    """
+    Builds the tower of programs.
+
+    :return: the program at the bottom of the tower
+    """
     # Dictionary to map program names to actual programs
     program_by_name: Dict[str, Program] = {}
     # Stores a list of pairs. Each pair holds a program name and the name of one of its sub-programs
@@ -84,7 +89,7 @@ def programs(path: str) -> Iterator[Tuple[str, int, List[str]]]:
 
 
 def main():
-    tower_weight(read_tree(programs("input.txt")))
+    tower_weight(build_tower(programs("input.txt")))
 
 
 if __name__ == '__main__':
