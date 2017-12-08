@@ -8,6 +8,7 @@ from collections import defaultdict
 # Structure used to represent the registers and hold their values
 #
 registers: Dict[str, int] = defaultdict(int)
+highest_register_value = 0
 
 
 class Expression(ABC):
@@ -31,7 +32,10 @@ class Increment(Operation):
         self.register = register
 
     def eval(self):
+        global highest_register_value
+
         registers[self.register] += self.value
+        highest_register_value = max(registers[self.register], highest_register_value)
 
 
 class Decrement(Operation):
@@ -41,7 +45,10 @@ class Decrement(Operation):
         self.register = register
 
     def eval(self):
+        global highest_register_value
+
         registers[self.register] -= self.value
+        highest_register_value = max(registers[self.register], highest_register_value)
 
 
 class Condition(ABC):
@@ -180,7 +187,8 @@ def main():
     program = parser.parse("input.txt")
     program.run()
 
-    print("SOLUTION:", max(registers.items(), key=operator.itemgetter(1)))
+    print("Solution part 1:", max(registers.items(), key=operator.itemgetter(1)))
+    print("Solution part 2:", highest_register_value)
 
 
 if __name__ == '__main__':
