@@ -13,13 +13,6 @@ class Program(NamedTuple):
         return hash(self.name)
 
 
-def find_odd(values: List[int]) -> Tuple[int, int]:
-    if values.count(max(values)) == 1:
-        return max(values), min(values)
-    else:
-        return min(values), max(values)
-
-
 def tower_weight(program: Program) -> int:
     weight = program.weight
 
@@ -31,13 +24,30 @@ def tower_weight(program: Program) -> int:
         sub_weights.append(sub_tower_weight)
 
     if sub_weights:
-        different_weight, common_weight = find_odd(sub_weights)
+        different_weight, common_weight = find_different(sub_weights)
 
         if different_weight != common_weight:
             sub_program = weight_to_program[different_weight]
             print("SOLUTION:", common_weight - different_weight + sub_program.weight)
 
     return weight + sum(sub_weights)
+
+
+def find_different(values: List[int]) -> Tuple[int, int]:
+    """
+    Looks for a value that is different among a list of *values* that are almost all equal to
+    each other. It returns the different value and the common value. If all values are equal,
+    then it returns two equal values.
+
+    It assumes that most values are equal with the exception of only one.
+    It also assumes the list of values has at least 3 values.
+
+    :return: tuple with the value different from all the others and the common value.
+    """
+    if values.count(max(values)) == 1:
+        return max(values), min(values)
+    else:
+        return min(values), max(values)
 
 
 def build_tower(programs: Iterator[Tuple[str, int, List[str]]]) -> Program:
