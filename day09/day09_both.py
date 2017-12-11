@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterator, Tuple
 
 
 class ParseError(Exception):
@@ -10,9 +10,10 @@ class Parser:
     def __init__(self):
         self.stack_count = 0
         self.state = None
+        self.score = 0
         self.garbage_count = 0
 
-    def parse(self, stream: Iterator[str]) -> int:
+    def parse(self, stream: Iterator[str]) -> Tuple[int, int]:
 
         character = next(stream)
 
@@ -26,13 +27,7 @@ class Parser:
             character = next(stream)
             self.state(character)
 
-        try:
-            character = next(stream)
-            print("ERROR: stream still has characters:", character)
-        except StopIteration:
-            pass  # Ok
-
-        return self.garbage_count
+        return self.score, self.garbage_count
 
     def group_state(self, character: str):
 
@@ -81,6 +76,7 @@ class Parser:
         self.stack_count += 1
 
     def end_group(self):
+        self.score += self.stack_count
         self.stack_count -= 1
 
         if self.stack_count < 0:
@@ -93,7 +89,9 @@ def streamer(path: str) -> Iterator[str]:
 
 
 def main():
-    print("Solution part 2:", Parser().parse(streamer("input.txt")))
+    solution_1, solution_2 = Parser().parse(streamer("input.txt"))
+    print("Solution part 1:", solution_1)
+    print("Solution part 2:", solution_2)
 
 
 if __name__ == '__main__':
