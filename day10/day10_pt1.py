@@ -1,10 +1,6 @@
 from typing import Iterator, List
 
 
-def real(elements: List[int], i: int, offset: int) -> int:
-    return elements[i - offset]
-
-
 def slide(elements: List[int], offset: int) -> List[int]:
     bound = offset % len(elements)
     return elements[bound:] + elements[:bound]
@@ -23,7 +19,10 @@ def knot_hash(element_count: int, lengths: Iterator[int]) -> int:
         elements = slide(elements, length + skip_size)
         position = (position + length + skip_size) % element_count
 
-    return real(elements, 0, position) * real(elements, 1, position)
+    # Adjust the elements to their expected positions
+    elements = slide(elements, -position)
+
+    return elements[0] * elements[1]
 
 
 def lengths(path: str) -> Iterator[int]:

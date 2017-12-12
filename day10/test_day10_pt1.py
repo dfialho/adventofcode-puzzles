@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from day10_pt1 import reverse, slide, real
+from day10_pt1 import reverse, slide
 
 
 @pytest.mark.parametrize("elements, length, reversed_list", [
@@ -24,13 +24,3 @@ def test_reverse(elements: List[int], length: int, reversed_list: List[int]):
 ])
 def test_slide(elements: List[int], offset: int, expected_result: List[int]):
     assert expected_result == slide(elements, offset)
-
-
-@pytest.mark.parametrize("elements, position, offset, expected_result", [
-    ([1, 2, 3, 4, 0], 0, 1, 0),
-    ([2, 3, 4, 0, 1], 0, 2, 0),
-    ([2, 3, 4, 0, 1], 1, 2, 1),
-    ([2, 3, 4, 0, 1], 3, 2, 3),
-])
-def test_real(elements: List[int], position: int, offset: int, expected_result: List[int]):
-    assert expected_result == real(elements, position, offset)
