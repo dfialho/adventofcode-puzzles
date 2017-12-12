@@ -1,6 +1,6 @@
 import pytest
 
-from spiral_part2 import level, side_index
+from day03_pt2 import level, side_index
 
 
 @pytest.mark.parametrize("n, solution", [

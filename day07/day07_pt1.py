@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, List, Iterator, Set
+from typing import Tuple, List, Iterator, Set
 
 
 def find_bottom_program(programs: Iterator[Tuple[str, List[str]]]) -> str:
@@ -15,7 +15,7 @@ def find_bottom_program(programs: Iterator[Tuple[str, List[str]]]) -> str:
     return bottom_program.pop()
 
 
-def programs(path: str) -> Generator[Tuple[str, List[str]], None, None]:
+def input(path: str) -> Iterator[Tuple[str, List[str]]]:
     with open(path) as file:
         for line in file:
             program, *sub_programs = line.split("->")
@@ -28,7 +28,7 @@ def programs(path: str) -> Generator[Tuple[str, List[str]], None, None]:
 
 
 def main():
-    print("Solution part 1:", find_bottom_program(programs("input.txt")))
+    print("Solution part 1:", find_bottom_program(input("input.txt")))
 
 
 if __name__ == '__main__':

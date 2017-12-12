@@ -1,6 +1,6 @@
 import pytest
 
-from checksum_spreadsheet import difference, even_division
+from day02 import difference, even_division
 
 
 @pytest.mark.parametrize("row, expected_difference", [

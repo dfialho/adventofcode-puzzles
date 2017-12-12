@@ -21,7 +21,7 @@ def hex_str(value: int) -> str:
     return f'{value:0{2}x}'
 
 
-def hash_rounds(lengths: Iterator[int], elements: List[int], count: int = 1):
+def hash_rounds(lengths: Iterable[int], elements: List[int], count: int = 1):
     position, skip_size = 0, 0
     for i in range(count):
         for length in lengths:

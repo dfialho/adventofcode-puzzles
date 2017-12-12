@@ -27,7 +27,7 @@ class Operation(ABC):
 
 class Increment(Operation):
 
-    def __init__(self, register: str, value: int):
+    def __init__(self, register: str, value: int) -> None:
         self.value = value
         self.register = register
 
@@ -40,7 +40,7 @@ class Increment(Operation):
 
 class Decrement(Operation):
 
-    def __init__(self, register: str, value: int):
+    def __init__(self, register: str, value: int) -> None:
         self.value = value
         self.register = register
 
@@ -60,7 +60,7 @@ class Condition(ABC):
 
 class EqualTo(Condition):
 
-    def __init__(self, register: str, value: int):
+    def __init__(self, register: str, value: int) -> None:
         self.register = register
         self.value = value
 
@@ -70,7 +70,7 @@ class EqualTo(Condition):
 
 class DifferentFrom(Condition):
 
-    def __init__(self, register: str, value: int):
+    def __init__(self, register: str, value: int) -> None:
         self.register = register
         self.value = value
 
@@ -80,7 +80,7 @@ class DifferentFrom(Condition):
 
 class LowerThan(Condition):
 
-    def __init__(self, register: str, value: int):
+    def __init__(self, register: str, value: int) -> None:
         self.register = register
         self.value = value
 
@@ -90,7 +90,7 @@ class LowerThan(Condition):
 
 class LowerThanOrEqualTo(Condition):
 
-    def __init__(self, register: str, value: int):
+    def __init__(self, register: str, value: int) -> None:
         self.register = register
         self.value = value
 
@@ -100,7 +100,7 @@ class LowerThanOrEqualTo(Condition):
 
 class HigherThan(Condition):
 
-    def __init__(self, register: str, value: int):
+    def __init__(self, register: str, value: int) -> None:
         self.register = register
         self.value = value
 
@@ -110,7 +110,7 @@ class HigherThan(Condition):
 
 class HigherThanOrEqualTo(Condition):
 
-    def __init__(self, register: str, value: int):
+    def __init__(self, register: str, value: int) -> None:
         self.register = register
         self.value = value
 
@@ -120,7 +120,7 @@ class HigherThanOrEqualTo(Condition):
 
 class IfStatement(Expression):
 
-    def __init__(self, operation: Operation, condition: Condition):
+    def __init__(self, operation: Operation, condition: Condition) -> None:
         self.operation = operation
         self.condition = condition
 
@@ -131,7 +131,7 @@ class IfStatement(Expression):
 
 class Program:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.expressions: List[Expression] = []
 
     def run(self):

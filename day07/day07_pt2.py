@@ -58,13 +58,13 @@ def find_different(values: List[int]) -> Tuple[int, int]:
 
 def build_tower(programs: Iterator[Tuple[str, int, List[str]]]) -> Program:
     """
-    Builds the tower of programs.
+    Builds the tower of input.
 
     :return: the program at the bottom of the tower
     """
-    # Dictionary to map program names to actual programs
+    # Dictionary to map program names to actual input
     program_by_name: Dict[str, Program] = {}
-    # Stores a list of pairs. Each pair holds a program name and the name of one of its sub-programs
+    # Stores a list of pairs. Each pair holds a program name and the name of one of its sub-input
     sub_programs_names: List[Tuple[str, str]] = []
 
     # Initialize 'program_by_name' and 'sub_programs_names' based on the input
@@ -72,7 +72,7 @@ def build_tower(programs: Iterator[Tuple[str, int, List[str]]]) -> Program:
         program_by_name[name] = Program(name, weight, [])
         sub_programs_names.extend((name, sub_name) for sub_name in sub_names)
 
-    # Add the actual sub-programs to each program according to 'sub_programs_by_name'
+    # Add the actual sub-input to each program according to 'sub_programs_by_name'
     for name, sub_name in sub_programs_names:
         program_by_name[name].sub_programs.append(program_by_name[sub_name])
 
@@ -82,13 +82,13 @@ def build_tower(programs: Iterator[Tuple[str, int, List[str]]]) -> Program:
     return program_by_name[bottom_program.pop()]
 
 
-def programs(path: str) -> Iterator[Tuple[str, int, List[str]]]:
+def input(path: str) -> Iterator[Tuple[str, int, List[str]]]:
     """
     Parses each line in the input. A line is converted to a tuple containing (1) the program name,
-    (2) the program weight, and (3) a list with the names of the sub-programs. This list is empty
+    (2) the program weight, and (3) a list with the names of the sub-input. This list is empty
     if the program has no sub_programs.
 
-    :return: tuple with the program name, weight, an list of sub-programs' names
+    :return: tuple with the program name, weight, an list of sub-input' names
     """
     with open(path) as file:
         for line in file:
@@ -105,7 +105,7 @@ def programs(path: str) -> Iterator[Tuple[str, int, List[str]]]:
 
 
 def main():
-    tower_weight(build_tower(programs("input.txt")))
+    tower_weight(build_tower(input("input.txt")))
 
 
 if __name__ == '__main__':

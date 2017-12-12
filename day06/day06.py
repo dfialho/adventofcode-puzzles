@@ -1,20 +1,16 @@
+from typing import List, Iterator, Tuple
+
 import operator
-from typing import List, Set, Tuple
 
 
-def read_configuration(path: str) -> List[int]:
-    with open(path) as file:
-        return list(map(int, file.read().split('\t')))
-
-
-def count_cycles(configuration: List[int]) -> int:
+def count_cycles(configuration: List[int]) -> Tuple[int, int]:
     bank_count = len(configuration)
-    past_configurations: Set[tuple] = set()
+    past_configurations: List[tuple] = []
     current_configuration = tuple(configuration)
     cycle_count = 0
 
     while current_configuration not in past_configurations:
-        past_configurations.add(current_configuration)
+        past_configurations.append(current_configuration)
 
         # Find the bank with the highest number of blocks
         bank, block_count = max(enumerate(configuration), key=operator.itemgetter(1))
@@ -27,11 +23,18 @@ def count_cycles(configuration: List[int]) -> int:
         cycle_count += 1
         current_configuration = tuple(configuration)
 
-    return cycle_count
+    return cycle_count, cycle_count - past_configurations.index(current_configuration)
+
+
+def input(path: str) -> Iterator[int]:
+    with open(path) as file:
+        return map(int, file.read().split('\t'))
 
 
 def main() -> None:
-    print("Solution part 1:", count_cycles(read_configuration("input.txt")))
+    redistribution_cycle_count, loop_size = count_cycles(list(input("input.txt")))
+    print("Solution part 1:", redistribution_cycle_count)
+    print("Solution part 2:", loop_size)
 
 
 if __name__ == '__main__':

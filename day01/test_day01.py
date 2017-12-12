@@ -1,6 +1,6 @@
 import pytest
 
-from sum_captcha import sum_captcha
+from day01 import sum_captcha
 
 
 @pytest.mark.parametrize("captcha, solution", [
