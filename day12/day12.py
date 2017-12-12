@@ -1,4 +1,4 @@
-from typing import Dict, Set
+from typing import Dict, Set, Iterator
 
 from collections import defaultdict
 
@@ -14,6 +14,9 @@ class Graph:
 
     def neighbors(self, node: int):
         return self._nodes[node]
+
+    def nodes(self) -> Iterator[int]:
+        return iter(self._nodes.keys())
 
     def __str__(self):
         return str(self._nodes)
@@ -32,6 +35,33 @@ def count_group_nodes(graph: Graph, start_node: int):
             if neighbor not in visited:
                 stack.append(neighbor)
                 visited.add(neighbor)
+
+    return count
+
+
+def count_groups(graph: Graph, start_node: int):
+    stack = [start_node]
+    visited: Set[int] = {start_node}
+    non_visited = set(graph.nodes()) - visited
+    count = 0
+
+    while True:
+        while len(stack) > 0:
+            node = stack.pop()
+
+            for neighbor in graph.neighbors(node):
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    visited.add(neighbor)
+                    non_visited.remove(neighbor)
+
+        count += 1
+        try:
+            next_node = non_visited.pop()
+            stack.append(next_node)
+            visited.add(next_node)
+        except KeyError:
+            break
 
     return count
 
@@ -58,6 +88,8 @@ def main():
     #
     # Part 2
     #
+
+    print("Solution part 2:", count_groups(read_graph("input.txt"), start_node=0))
 
 
 if __name__ == '__main__':
