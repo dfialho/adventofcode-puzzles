@@ -1,6 +1,6 @@
 import pytest
 
-from day09_both import Parser
+from day09 import Parser
 
 
 @pytest.mark.parametrize("stream, expected_score, expected_garbage_count", [
