@@ -39,13 +39,17 @@ def count_group_nodes(graph: Graph, start_node: int):
     return count
 
 
-def count_groups(graph: Graph, start_node: int):
-    stack = [start_node]
-    visited: Set[int] = {start_node}
-    non_visited = set(graph.nodes()) - visited
+def count_groups(graph: Graph):
+    visited: Set[int] = set()
+    non_visited = set(graph.nodes())
     count = 0
 
-    while True:
+    while len(non_visited) > 0:
+        start_node = non_visited.pop()
+        visited.add(start_node)
+        stack = [start_node]
+        count += 1
+
         while len(stack) > 0:
             node = stack.pop()
 
@@ -54,14 +58,6 @@ def count_groups(graph: Graph, start_node: int):
                     stack.append(neighbor)
                     visited.add(neighbor)
                     non_visited.remove(neighbor)
-
-        count += 1
-        try:
-            next_node = non_visited.pop()
-            stack.append(next_node)
-            visited.add(next_node)
-        except KeyError:
-            break
 
     return count
 
@@ -89,7 +85,7 @@ def main():
     # Part 2
     #
 
-    print("Solution part 2:", count_groups(read_graph("input.txt"), start_node=0))
+    print("Solution part 2:", count_groups(read_graph("input.txt")))
 
 
 if __name__ == '__main__':
