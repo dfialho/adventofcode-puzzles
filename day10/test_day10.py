@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from day10_pt2 import reverse, slide, knot_hash, hex_str, xor
+from day10 import reverse, slide, knot_hash, hex_str, xor
 
 
 @pytest.mark.parametrize("elements, length, reversed_list", [
