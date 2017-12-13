@@ -1,6 +1,10 @@
 from typing import Iterator, List, Tuple
 
 
+def is_caught(time: int, height: int):
+    return time % (2 * (height - 1)) == 0
+
+
 def calculate_delay(layers: List[Tuple[int, int]]) -> int:
     delay = -1
     caught = True
@@ -10,7 +14,7 @@ def calculate_delay(layers: List[Tuple[int, int]]) -> int:
         caught = False
 
         for depth, height in layers:
-            if (depth + delay) % (2 * (height - 1)) == 0:
+            if is_caught(depth + delay, height):
                 caught = True
                 break
 
@@ -20,7 +24,7 @@ def calculate_delay(layers: List[Tuple[int, int]]) -> int:
 def calculate_severity(layers: List[Tuple[int, int]]) -> int:
     severity = 0
     for depth, height in layers:
-        if depth % (2 * (height - 1)) == 0:
+        if is_caught(depth, height):
             severity += depth * height
 
     return severity
@@ -34,7 +38,6 @@ def input(path: str) -> Iterator[Tuple[int, int]]:
 
 
 def main():
-
     #
     # Part 1
     #
