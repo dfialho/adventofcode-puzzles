@@ -1,4 +1,4 @@
-from typing import List, Iterator, Dict, Tuple, NewType, Set
+from typing import Iterator, Dict, Tuple, NewType, Set
 
 import hashing
 
@@ -9,9 +9,11 @@ def hashes(key: str, n: int) -> Iterator[str]:
         yield hashing.knot_hash(f"{key}-{i}")
 
 
-def to_bits(hash_str: str) -> str:
-    """ Converts hexadecimal *hash_str* to a string of bits """
-    return "".join(f"{int(character, 16):04b}" for character in hash_str)
+def bits(hash_str: str) -> Iterator[str]:
+    """ Generates each bit in the given hash string *hash_str* """
+    for character in hash_str:
+        for bit in f"{int(character, 16):04b}":
+            yield bit
 
 
 Position = NewType('Position', Tuple[int, int])
@@ -65,7 +67,7 @@ def count_groups(graph: Graph):
 
 def nodes_iter(key: str) -> Iterator[Tuple[Position]]:
     for y, hash_str in enumerate(hashes(key, n=128)):
-        for x, bit in enumerate(to_bits(hash_str)):
+        for x, bit in enumerate(bits(hash_str)):
             if bit == '1':
                 yield (x, y)
 
@@ -88,12 +90,8 @@ def build_graph(nodes: Iterator[Tuple[Position]]) -> Graph:
     return graph
 
 
-def build_grid(key: str) -> List[str]:
-    return [to_bits(hash_str) for hash_str in hashes(key, n=128)]
-
-
-def count_used(grid: List[str]) -> int:
-    return sum(row.count('1') for row in grid)
+def count_used(key: str) -> int:
+    return sum(1 for hash_str in hashes(key, n=128) for bit in bits(hash_str) if bit == '1')
 
 
 def input(path: str) -> str:
@@ -105,7 +103,7 @@ def main():
     #
     # Part 1
     #
-    print("Solution part 1:", count_used(build_grid(input("input.txt"))))
+    print("Solution part 1:", count_used(input("input.txt")))
 
     #
     # Part 2
