@@ -1,6 +1,8 @@
-from typing import List, Iterator, Dict, Tuple, NewType, Optional
+from typing import Iterator, Dict, Tuple, NewType, Set
 
 import hashing
+
+Position = NewType('Position', Tuple[int, int])
 
 
 def hashes(key: str, n: int) -> Iterator[str]:
@@ -16,100 +18,75 @@ def bits(hash_str: str) -> Iterator[str]:
             yield bit
 
 
-Position = NewType('Position', Tuple[int, int])
-
-
-class Grid:
-    """ Square grid (NxN) to hold integer values """
-
-    def __init__(self, size: int):
-        """
-        Initializes a square grid with dimensions (size x size). All positions of the grid are
-        set to None.
-        """
-        self._groups: List[List[int]] = [[None] * size for i in range(size)]
-
-    def __getitem__(self, position: Position) -> Optional[int]:
-        """
-        Gets the value in the given *position* of the grid. It returns None if the
-        given *position* is outside of the grid.
-        """
-        x, y = position
-
-        if x >= 128 or x < 0 or y >= 128 or y < 0:
-            return None
-
-        return self._groups[y][x]
-
-    def __setitem__(self, position: Position, value: int):
-        """ Sets the *value* for the specified *position* """
-        x, y = position
-        self._groups[y][x] = value
-
-
-def min_optional(a: Optional[int], b: Optional[int]) -> Optional[int]:
-    """
-    Returns the minimum between two optional integers. It works in the same way as the 'min'
-    built-in function, except that it supports None values. A None value is always considered
-    higher than a no-None value.
-    """
-    if a is None:
-        return b
-    elif b is None:
-        return a
-    else:
-        return min(a, b)
-
-
-def count_regions(key: str) -> int:
-    # Stores the positions belonging to each group
-    regions: Dict[int, List[Position]] = {}
-    # Grid holding the regions IDs of each position
-    region_grid = Grid(size=128)
-    # Stores an ID to assign to each new region found
-    next_region_id = 1
-
+def iter_used_squares(key: str) -> Iterator[Position]:
+    """ Iterates over all used squares in the grid generated from the given *key* """
     for y, hash_str in enumerate(hashes(key, n=128)):
         for x, bit in enumerate(bits(hash_str)):
-            if bit == '0':
-                # ignore free bits
-                continue
+            if bit == '1':
+                yield (x, y)
 
-            left_region = region_grid[x - 1, y]
-            top_region = region_grid[x, y - 1]
 
-            if not left_region and not top_region:
-                # This bit starts a new region
-                regions[next_region_id] = [(x, y)]
-                region_grid[x, y] = next_region_id
-                next_region_id += 1
+class Graph:
 
-            else:
-                # This position either belongs to the top or left region
-                # It belongs to the one with the lowest ID
-                region = min_optional(left_region, top_region)
+    def __init__(self):
+        self._nodes: Dict[Position, Set[Position]] = {}
 
-                # Set region for this position
-                regions[region].append((x, y))
-                region_grid[x, y] = region
+    def add_edge(self, node1: Position, node2: Position):
+        if node1 in self._nodes:
+            self._nodes[node1].add(node2)
+            self._nodes[node2].add(node1)
 
-                # If the left and top regions are not the same, then this two regions are now the
-                # same. Therefore, all positions in this two regions need to be set to the same
-                # region
-                if left_region and top_region and left_region != top_region:
-                    lowest_group = min(left_region, top_region)
-                    highest_group = max(left_region, top_region)
+    def add_node(self, node: Position):
+        self._nodes[node] = set()
 
-                    # Move all positions in the region with the highest ID to the one with the
-                    # lowest ID
-                    for position in regions[highest_group]:
-                        regions[lowest_group].append(position)
-                        region_grid[position] = lowest_group
+    def neighbors(self, node: Position):
+        return self._nodes[node]
 
-                    # The region with the highest ID no longer exists
-                    del regions[highest_group]
+    def nodes(self) -> Iterator[Position]:
+        return iter(self._nodes.keys())
 
-    return len(regions)
+    def __str__(self):
+        return str(self._nodes)
+
+
+def build_graph(nodes: Iterator[Position]) -> Graph:
+    """ Builds a graph connecting all used squares """
+    graph = Graph()
+
+    for x, y in nodes:
+        node = (x, y)
+        graph.add_node(node)
+
+        # Link with top node
+        graph.add_edge((x, y - 1), node)
+        # Link with left_node
+        graph.add_edge((x - 1, y), node)
+
+    return graph
+
+
+def count_groups(graph: Graph):
+    """ Runs a DFSs to find all strongly-connected components (the groups) """
+    visited: Set[Position] = set()
+    non_visited = set(graph.nodes())
+    count = 0
+
+    while len(non_visited) > 0:
+        start_node = non_visited.pop()
+        visited.add(start_node)
+        stack = [start_node]
+        count += 1
+
+        while len(stack) > 0:
+            node = stack.pop()
+
+            for neighbor in graph.neighbors(node):
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    visited.add(neighbor)
+                    non_visited.remove(neighbor)
+
+    return count
 
 
 def count_used(key: str) -> int:
@@ -130,7 +107,7 @@ def main():
     #
     # Part 2
     #
-    print("Solution part 2:", count_regions(input("input.txt")))
+    print("Solution part 2:", count_groups(build_graph(iter_used_squares(input("input.txt")))))
 
 
 if __name__ == '__main__':
