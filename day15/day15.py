@@ -1,4 +1,4 @@
-from typing import Tuple, Iterator, Optional
+from typing import Tuple, Iterator
 
 
 def judge(generator_a: Iterator[int], generator_b: Iterator[int], n_pairs: int):
@@ -10,11 +10,11 @@ def judge(generator_a: Iterator[int], generator_b: Iterator[int], n_pairs: int):
     return count
 
 
-def generator(seed: int, factor: int, multiple: Optional[int] = None) -> Iterator[int]:
+def generator(seed: int, factor: int, multiple: int = 1) -> Iterator[int]:
     value = seed
     while True:
         value = (value * factor) % 2147483647
-        if not multiple or value % multiple == 0:
+        if value % multiple == 0:
             yield value
 
 
