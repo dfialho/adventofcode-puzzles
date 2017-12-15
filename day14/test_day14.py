@@ -1,6 +1,6 @@
 import pytest
 
-from day14 import build_grid, count_used, count_groups
+from day14 import build_grid, count_used, count_regions
 
 
 @pytest.mark.parametrize("key_str, expected_count", [
@@ -14,4 +14,4 @@ def test_count_used(key_str: str, expected_count: int):
     ("flqrgnkx", 1242)
 ])
 def test_count_regions(key_str: str, expected_count: int):
-    assert expected_count == count_groups(key_str)
+    assert expected_count == count_regions(key_str)

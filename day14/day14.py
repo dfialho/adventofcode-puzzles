@@ -4,24 +4,34 @@ import hashing
 
 
 def hashes(key: str, n: int) -> Iterator[str]:
+    """ Generates the *n* hash strings for the given *key* """
     for i in range(n):
         yield hashing.knot_hash(f"{key}-{i}")
 
 
 def to_bits(hash_str: str) -> str:
+    """ Converts hexadecimal *hash_str* to a string of bits """
     return "".join(f"{int(character, 16):04b}" for character in hash_str)
 
 
 Position = NewType('Position', Tuple[int, int])
-Group = NewType('Group', int)
 
 
 class Grid:
+    """ Square grid (NxN) to hold integer values """
 
     def __init__(self, size: int):
+        """
+        Initializes a square grid with dimensions (size x size). All positions of the grid are
+        set to None.
+        """
         self._groups: List[List[int]] = [[None] * size for i in range(size)]
 
-    def __getitem__(self, position: Position):
+    def __getitem__(self, position: Position) -> Optional[int]:
+        """
+        Gets the value in the given *position* of the grid. It returns None if the
+        given *position* is outside of the grid.
+        """
         x, y = position
 
         if x >= 128 or x < 0 or y >= 128 or y < 0:
@@ -30,11 +40,17 @@ class Grid:
         return self._groups[y][x]
 
     def __setitem__(self, position: Position, value: int):
+        """ Sets the *value* for the specified *position* """
         x, y = position
         self._groups[y][x] = value
 
 
 def min_optional(a: Optional[int], b: Optional[int]) -> Optional[int]:
+    """
+    Returns the minimum between two optional integers. It works in the same way as the 'min'
+    built-in function, except that it supports None values. A None value is always considered
+    higher than a no-None value.
+    """
     if a is None:
         return b
     elif b is None:
@@ -43,41 +59,55 @@ def min_optional(a: Optional[int], b: Optional[int]) -> Optional[int]:
         return min(a, b)
 
 
-def count_groups(key: str) -> int:
-    groups: Dict[Group, List[Position]] = {}
-    group_grid = Grid(size=128)
-    next_group = 1
+def count_regions(key: str) -> int:
+    # Stores the positions belonging to each group
+    regions: Dict[int, List[Position]] = {}
+    # Grid holding the regions IDs of each position
+    region_grid = Grid(size=128)
+    # Stores an ID to assign to each new region found
+    next_region_id = 1
 
     for y, hash_str in enumerate(hashes(key, n=128)):
         for x, bit in enumerate(to_bits(hash_str)):
             if bit == '0':
+                # ignore free bits
                 continue
 
-            left = group_grid[x - 1, y]
-            top = group_grid[x, y - 1]
+            left_region = region_grid[x - 1, y]
+            top_region = region_grid[x, y - 1]
 
-            if not left and not top:
-                # This is a new group
-                group_grid[x, y] = next_group
-                groups[next_group] = [(x, y)]
-                next_group += 1
+            if not left_region and not top_region:
+                # This bit starts a new region
+                regions[next_region_id] = [(x, y)]
+                region_grid[x, y] = next_region_id
+                next_region_id += 1
 
             else:
-                group = min_optional(left, top)
-                group_grid[x, y] = group
-                groups[group].append((x, y))
+                # This position either belongs to the top or left region
+                # It belongs to the one with the lowest ID
+                region = min_optional(left_region, top_region)
 
-                if left and top and left != top:
-                    # All positions in group with highest ID need to moved to group with lowest ID
-                    lowest_group = min(left, top)
-                    highest_group = max(left, top)
+                # Set region for this position
+                regions[region].append((x, y))
+                region_grid[x, y] = region
 
-                    for position in groups[highest_group]:
-                        group_grid[position] = lowest_group
-                        groups[lowest_group].append(position)
-                    del groups[highest_group]
+                # If the left and top regions are not the same, then this two regions are now the
+                # same. Therefore, all positions in this two regions need to be set to the same
+                # region
+                if left_region and top_region and left_region != top_region:
+                    lowest_group = min(left_region, top_region)
+                    highest_group = max(left_region, top_region)
 
-    return len(groups)
+                    # Move all positions in the region with the highest ID to the one with the
+                    # lowest ID
+                    for position in regions[highest_group]:
+                        regions[lowest_group].append(position)
+                        region_grid[position] = lowest_group
+
+                    # The region with the highest ID no longer exists
+                    del regions[highest_group]
+
+    return len(regions)
 
 
 def build_grid(key: str) -> List[str]:
@@ -102,7 +132,7 @@ def main():
     #
     # Part 2
     #
-    print("Solution part 1:", count_groups(input("input.txt")))
+    print("Solution part 1:", count_regions(input("input.txt")))
 
 
 if __name__ == '__main__':
