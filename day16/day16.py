@@ -1,4 +1,4 @@
-from typing import Iterator, List
+from typing import Iterator, List, Hashable, Set
 
 from abc import ABC, abstractmethod
 
@@ -32,9 +32,9 @@ class ExchangeMove(DanceMove):
 
 class PartnerMove(DanceMove):
 
-    def __init__(self, a: str, program_b: str):
+    def __init__(self, a: str, b: str):
         self.a = a
-        self.b = program_b
+        self.b = b
 
     def do(self, programs: List[str]) -> List[str]:
         position_a = programs.index(self.a)
@@ -63,15 +63,27 @@ def dance_moves(tokens: Iterator[str]) -> Iterator[DanceMove]:
         yield move
 
 
+def hashable(state: List[str]) -> Hashable:
+    return "".join(state)
+
+
 def dance(moves: Iterator[DanceMove], n: int = 1) -> List[str]:
-    programs = [chr(ord('a') + i) for i in range(16)]
+    current_state = [chr(ord('a') + i) for i in range(16)]
+    cache: Set[Hashable] = set()
+    state_history: List[List[str]] = []
 
     moves = list(moves)
     for i in range(n):
-        for move in moves:
-            programs = move.do(programs)
+        if hashable(current_state) in cache:
+            return state_history[n % i]
 
-    return programs
+        state_history.append(current_state.copy())
+        cache.add(hashable(current_state))
+
+        for move in moves:
+            current_state = move.do(current_state)
+
+    return current_state
 
 
 def input(path: str) -> Iterator[str]:
