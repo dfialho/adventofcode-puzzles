@@ -32,9 +32,9 @@ class ExchangeMove(DanceMove):
 
 class PartnerMove(DanceMove):
 
-    def __init__(self, a: str, b: str):
+    def __init__(self, a: str, program_b: str):
         self.a = a
-        self.b = b
+        self.b = program_b
 
     def do(self, programs: List[str]) -> List[str]:
         position_a = programs.index(self.a)
@@ -63,11 +63,13 @@ def dance_moves(tokens: Iterator[str]) -> Iterator[DanceMove]:
         yield move
 
 
-def dance(moves: Iterator[DanceMove]) -> List[str]:
+def dance(moves: Iterator[DanceMove], n: int = 1) -> List[str]:
     programs = [chr(ord('a') + i) for i in range(16)]
 
-    for move in moves:
-        programs = move.do(programs)
+    moves = list(moves)
+    for i in range(n):
+        for move in moves:
+            programs = move.do(programs)
 
     return programs
 
@@ -83,6 +85,11 @@ def main():
     # Part 1
     #
     print("Solution part 1:", "".join(dance(dance_moves(input("input.txt")))))
+
+    #
+    # Part 2
+    #
+    print("Solution part 2:", "".join(dance(dance_moves(input("input.txt")), n=1000000000)))
 
 
 if __name__ == '__main__':
